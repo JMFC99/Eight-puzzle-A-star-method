@@ -9,7 +9,8 @@ class A_star:
 
     def __init__(self,initial_state):
         self.states=initial_state
-        self.space_position = []
+        self.final_goal = [[1,2,3],[4,5,6],[7,8,'*']]
+        
         pass
 
     def print_statement(self):
@@ -77,8 +78,30 @@ class A_star:
             self.states[space_position[0]][space_position[1]] = self.states[number_position[0]][number_position[1]]
             self.states[number_position[0]][number_position[1]] = '*'
 
-    def conditions_movement(type=''):
-        pass
+    def surrondings(self,value): ### alrededores
+        value_position=self.find_position(value=value) #valor que se desea buscar
+        row,column = value_position  #fila y columna 
+        surrondings_positions = [] #posiciones de los alrededores
+        surrondings_values=[] # valores de los alrededores
+        
+        for i in [1,-1]: ### suma y resta 1 posicion en fila y columna para encontrar los alrededores
+            if (column+i>=0 and column+i<=2): ### los valores no pueden pasar de 2 ni ser menores de 0 ya que esto son las posiciones en las listas
+                surrondings_positions.append([row,column+i])
+            if (row+i>=0 and row+i<=2):
+                surrondings_positions.append([row+i,column])
+    
+        for i,j in surrondings_positions:
+                surrondings_values.append(self.states[i][j])
+        print(surrondings_values)
+        return surrondings_values ## regresa los valores de los alrededores
+
+            
+        #if (space_position[0]-1 == row) and (space_position[1] ==column): down
+        #if (space_position[0]+1 == row) and (space_position[1] ==column): up
+        #  if (space_position[0] == row) and (space_position[1]+1 ==column): left
+        #if (space_position[0] == row) and (space_position[1]-1 ==column): right
+
+        
 
 initial_state= [[7,2,4],[5,'*',6],[8,3,1]]
 # initial_state= [[7,2,4],[5,6,'*'],[8,3,1]]
@@ -92,7 +115,8 @@ example.print_statement()
 # example.left(number=6)
 # example.up(number=1)
 # example.down(number=2)
-example.print_statement()
+# example.print_statement()
+# example.surrondings(value='*')
 
 
 ### find in which line is the *
