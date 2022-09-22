@@ -10,8 +10,15 @@ class A_star:
     def __init__(self,initial_state):
         self.states=initial_state
         self.final_goal = [[1,2,3],[4,5,6],[7,8,'*']]
+        self.changed_values=[]
+        self.directions =['R','L','U','D'] ### right, left up and down
+        self.no_reached_goal = True
+        self.frontier = []
+        self.explored = []
+        self.cost = 1
         
         pass
+
 
     def print_statement(self):
         for i,j,k in self.states:
@@ -29,54 +36,76 @@ class A_star:
                 j = find[0].index(value) ### esta nos da la posición de la columna 
                 return [i,j]
 
-    def right(self,number):
+    def right(self,number,frontier):
         space_position=self.find_position()
-        print('asterisco posicion:',space_position)
+        # print('asterisco posicion:',space_position)
         number_position=self.find_position(value=number)
-        print('numero posicion:',space_position)
+        # print('numero posicion:',space_position)
         row,column = number_position ### tener la fila y columna
         
         if (space_position[0] == row) and (space_position[1]-1 ==column):
-            print('puedo moverlo a la derecha')
+            # print('puedo moverlo a la derecha')
+            if frontier: ### solo saber si se puede hacer el movimiento
+                return True
+            #### esta sección de código realiza el movimiento de los estados
             self.states[space_position[0]][space_position[1]] = self.states[number_position[0]][number_position[1]]
             self.states[number_position[0]][number_position[1]] = '*'
+            return
+        return False
 
-    def left(self,number): #### simplificar derecha e izquierda
+    def left(self,number,frontier): #### simplificar derecha e izquierda       
         space_position=self.find_position()
-        print('asterisco posicion:',space_position)
+        # print('asterisco posicion:',space_position)
         number_position=self.find_position(value=number)
-        print('numero posicion:',space_position)
+        # print('numero posicion:',space_position)
         row,column = number_position ### tener la fila y columna
         
         if (space_position[0] == row) and (space_position[1]+1 ==column):
-            print('puedo moverlo a la izquierda')
+            
+            if frontier:### solo saber si se puede hacer el movimiento
+                return True
+         #### esta sección de código realiza el movimiento de los estados
             self.states[space_position[0]][space_position[1]] = self.states[number_position[0]][number_position[1]]
             self.states[number_position[0]][number_position[1]] = '*'
+            return
+            
+        return False
     
-    def up(self,number):
+    def up(self,number,frontier):
         space_position=self.find_position()
-        print('asterisco posicion:',space_position)
+        # print('asterisco posicion:',space_position)
         number_position=self.find_position(value=number)
-        print('numero posicion:',space_position)
+        # print('numero posicion:',space_position)
         row,column = number_position ### tener la fila y columna
         
         if (space_position[0]+1 == row) and (space_position[1] ==column):
-            print('puedo moverlo arriba')
+            # print('puedo moverlo arriba')
+            if frontier:
+                return True
             self.states[space_position[0]][space_position[1]] = self.states[number_position[0]][number_position[1]]
             self.states[number_position[0]][number_position[1]] = '*'
+                            
+            return
+        return False
         
 
-    def down(self,number):
+    def down(self,number,frontier):
         space_position=self.find_position()
-        print('asterisco posicion:',space_position)
+        # print('asterisco posicion:',space_position)
         number_position=self.find_position(value=number)
-        print('numero posicion:',space_position)
+        # print('numero posicion:',space_position)
         row,column = number_position ### tener la fila y columna
         
         if (space_position[0]-1 == row) and (space_position[1] ==column):
-            print('puedo moverlo abajo')
+            # print('puedo moverlo abajo')
+
+            if frontier:
+                return True
             self.states[space_position[0]][space_position[1]] = self.states[number_position[0]][number_position[1]]
             self.states[number_position[0]][number_position[1]] = '*'
+            
+            return
+        return False
 
     def surrondings(self,value): ### alrededores
         value_position=self.find_position(value=value) #valor que se desea buscar
@@ -92,17 +121,107 @@ class A_star:
     
         for i,j in surrondings_positions:
                 surrondings_values.append(self.states[i][j])
-        print(surrondings_values)
+        # print(surrondings_values)
         return surrondings_values ## regresa los valores de los alrededores
 
-            
-        #if (space_position[0]-1 == row) and (space_position[1] ==column): down
-        #if (space_position[0]+1 == row) and (space_position[1] ==column): up
-        #  if (space_position[0] == row) and (space_position[1]+1 ==column): left
-        #if (space_position[0] == row) and (space_position[1]-1 ==column): right
+    def method(self):
+        objective = 1
+        objective_position =[0,0]
+        movements =[]
 
+
+        # while self.no_reached_goal:
+        #     ### obtener los valores alrededor del objetivo
+        #     surrondings_values = self.surrondings(value=objective)
+        #     surrondings_empty = self.surrondings(value='*')
+
+        #     match_numbers = list(filter(lambda x:x in surrondings_empty,surrondings_values))
+        #     #### son los numeros que conciden tanto en los alrededores del empty como del valor objetivo
+
+        #     if len(match_numbers)>0:
+        #         print('mover valores de alrededor')
+        #         distances = [] ### cambiar esto por frontier
+
+
+
+        #         for match_number in match_numbers:  ### en la lista de distances --> [[match_number,distance]....]
+        #             coordinates_match_number = self.find_position(value=match_number)
+        #             ##### esta se convierte en la heuristica
+        #             distance_number = self.calculate_distances(coordinates_match_number,objective_position) + self.cost ### este 1 significa el numbero de movimientos
+        #             ###
+        #             if (len(distances)!=0): ### si no esta vacío
+        #                 if distance_number<distances[-1][1]:  ### diferenciar el tipo de distancia del ultimo dato dado
+        #                     distances.append([match_number,distance_number]) ## colocar en valores de nuevas distancias
+
+        #             else:
+        #                 distances.append([match_numbers,distance_number])
+                
+        #         ##### realizar los movimientos
+        #         for direction in self.directions:
+        #             move_done  = self.movements(direction=direction)
+        #             if move_done:
+        #                 self.explored.append(f'{distances[0][0]}{direction}') ## sabemos la dirección inicial
+        #                 self.cost +=self.cost ### aumentamos el costo 
+        #                 break
+                
+            
+
+
+                ## 
+                ##
+                ##
+                ##
+                ##
+
+
+        pass
+
+    def calculate_distances(self,match_number_position,objective_position): #### esto será la heuristica y el numero de moviemientos el costo
+        distance =(((match_number_position[0]-objective_position[0])**2) + ((match_number_position[1]-objective_position[1]))**2)**(1/2)
+        return distance
+
+    
+    def movements(self,direction,value,frontier=False):
+        match direction:  ###['R','L','U','D']
+            case 'R':
+                return self.right(value,frontier)
+            
+            case 'L':
+                return self.left(value,frontier)
+            
+            case 'U':
+                return self.up(value,frontier)
+            
+            case 'D':
+                return self.down(value,frontier)
         
 
+    def frontier_method(self,objective):
+           
+        ### obtener los valores alrededor del objetivo
+            surrondings_values = self.surrondings(value=objective)
+            surrondings_empty = self.surrondings(value='*')
+
+            match_numbers = list(filter(lambda x:x in surrondings_empty,surrondings_values))
+            #### son los numeros que conciden tanto en los alrededores del empty como del valor objetivo
+
+            if len(match_numbers)<1:
+                match_numbers = surrondings_empty ### los numeros match seran nombrados a los encontrados por surrondings_empty
+
+            for match_number in match_numbers:
+                for direction in self.directions:
+                    # self.last_value = self.states
+                    direction_value = self.movements(direction=direction,value=match_number,frontier=True)
+                    if direction_value:
+                        self.frontier.append([match_number,direction])
+                        # print(self.states)
+                        # print(self.frontier)
+                        break
+
+
+
+       
+# changed_value=[]
 initial_state= [[7,2,4],[5,'*',6],[8,3,1]]
 # initial_state= [[7,2,4],[5,6,'*'],[8,3,1]]
 # initial_state= [[7,2,4],['*',5,6],[8,3,1]]
@@ -111,6 +230,7 @@ initial_state= [[7,2,4],[5,'*',6],[8,3,1]]
 
 example = A_star(initial_state=initial_state)
 example.print_statement()
+example.frontier_method(objective=1)
 # example.right(number=6)
 # example.left(number=6)
 # example.up(number=1)
@@ -128,3 +248,4 @@ example.print_statement()
 #         j = find[0].index('*')
 #         print([i,j])
 # print(initial_state.index['*'])
+print(example.frontier)
