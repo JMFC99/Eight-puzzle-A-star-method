@@ -39,16 +39,43 @@ class A_star:
             print('puedo moverlo a la derecha')
             self.states[space_position[0]][space_position[1]] = self.states[number_position[0]][number_position[1]]
             self.states[number_position[0]][number_position[1]] = '*'
-    
-    def up(self,states,number):
-        space_position=self.find_position()
-        number_position=self.find_position(value=number)
-        pass
 
-    def down(self,states,number):
+    def left(self,number): #### simplificar derecha e izquierda
         space_position=self.find_position()
+        print('asterisco posicion:',space_position)
         number_position=self.find_position(value=number)
-        pass
+        print('numero posicion:',space_position)
+        row,column = number_position ### tener la fila y columna
+        
+        if (space_position[0] == row) and (space_position[1]+1 ==column):
+            print('puedo moverlo a la izquierda')
+            self.states[space_position[0]][space_position[1]] = self.states[number_position[0]][number_position[1]]
+            self.states[number_position[0]][number_position[1]] = '*'
+    
+    def up(self,number):
+        space_position=self.find_position()
+        print('asterisco posicion:',space_position)
+        number_position=self.find_position(value=number)
+        print('numero posicion:',space_position)
+        row,column = number_position ### tener la fila y columna
+        
+        if (space_position[0]+1 == row) and (space_position[1] ==column):
+            print('puedo moverlo arriba')
+            self.states[space_position[0]][space_position[1]] = self.states[number_position[0]][number_position[1]]
+            self.states[number_position[0]][number_position[1]] = '*'
+        
+
+    def down(self,number):
+        space_position=self.find_position()
+        print('asterisco posicion:',space_position)
+        number_position=self.find_position(value=number)
+        print('numero posicion:',space_position)
+        row,column = number_position ### tener la fila y columna
+        
+        if (space_position[0]-1 == row) and (space_position[1] ==column):
+            print('puedo moverlo abajo')
+            self.states[space_position[0]][space_position[1]] = self.states[number_position[0]][number_position[1]]
+            self.states[number_position[0]][number_position[1]] = '*'
 
     def conditions_movement(type=''):
         pass
@@ -61,7 +88,10 @@ initial_state= [[7,2,4],[5,'*',6],[8,3,1]]
 
 example = A_star(initial_state=initial_state)
 example.print_statement()
-example.right(number=6)
+# example.right(number=6)
+# example.left(number=6)
+# example.up(number=1)
+# example.down(number=2)
 example.print_statement()
 
 
