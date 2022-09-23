@@ -32,7 +32,7 @@ class A_star:
             |8|3|1| <-   this
         '''
         for i in range(3):
-            if initial_state[i] == find[0]:
+            if self.states[i] == find[0]:
                 j = find[0].index(value) ### esta nos da la posición de la columna 
                 return [i,j]
 
@@ -124,64 +124,13 @@ class A_star:
         # print(surrondings_values)
         return surrondings_values ## regresa los valores de los alrededores
 
-    def method(self):
-        objective = 1
-        objective_position =[0,0]
-        movements =[]
-
-
-        # while self.no_reached_goal:
-        #     ### obtener los valores alrededor del objetivo
-        #     surrondings_values = self.surrondings(value=objective)
-        #     surrondings_empty = self.surrondings(value='*')
-
-        #     match_numbers = list(filter(lambda x:x in surrondings_empty,surrondings_values))
-        #     #### son los numeros que conciden tanto en los alrededores del empty como del valor objetivo
-
-        #     if len(match_numbers)>0:
-        #         print('mover valores de alrededor')
-        #         distances = [] ### cambiar esto por frontier
-
-
-
-        #         for match_number in match_numbers:  ### en la lista de distances --> [[match_number,distance]....]
-        #             coordinates_match_number = self.find_position(value=match_number)
-        #             ##### esta se convierte en la heuristica
-        #             distance_number = self.calculate_distances(coordinates_match_number,objective_position) + self.cost ### este 1 significa el numbero de movimientos
-        #             ###
-        #             if (len(distances)!=0): ### si no esta vacío
-        #                 if distance_number<distances[-1][1]:  ### diferenciar el tipo de distancia del ultimo dato dado
-        #                     distances.append([match_number,distance_number]) ## colocar en valores de nuevas distancias
-
-        #             else:
-        #                 distances.append([match_numbers,distance_number])
-                
-        #         ##### realizar los movimientos
-        #         for direction in self.directions:
-        #             move_done  = self.movements(direction=direction)
-        #             if move_done:
-        #                 self.explored.append(f'{distances[0][0]}{direction}') ## sabemos la dirección inicial
-        #                 self.cost +=self.cost ### aumentamos el costo 
-        #                 break
-                
-            
-
-
-                ## 
-                ##
-                ##
-                ##
-                ##
-
-
-        pass
 
     def calculate_distances(self,match_number_position,objective_position): #### esto será la heuristica y el numero de moviemientos el costo
         distance =(((match_number_position[0]-objective_position[0])**2) + ((match_number_position[1]-objective_position[1]))**2)**(1/2)
         return distance
 
     
-    def movements(self,direction,value,frontier=False):
+    def movements(self,direction,value,frontier=False): ### valor por default de que nos estamos buscando frontiers sino que si se quiere hacer el cambio
         match direction:  ###['R','L','U','D']
             case 'R':
                 return self.right(value,frontier)
@@ -197,7 +146,7 @@ class A_star:
         
 
     def frontier_method(self,objective):
-           
+        ##### esto obtenemos los alrededores del metodo
         ### obtener los valores alrededor del objetivo
             surrondings_values = self.surrondings(value=objective)
             surrondings_empty = self.surrondings(value='*')
@@ -213,24 +162,98 @@ class A_star:
                     # self.last_value = self.states
                     direction_value = self.movements(direction=direction,value=match_number,frontier=True)
                     if direction_value:
-                        self.frontier.append([match_number,direction])
+                        match_number_position= self.find_position(value=match_number)
+                        objective_position = self.find_position(value=objective)
+                        distance_number = self.calculate_distances(match_number_position,objective_position)+self.cost
+                        value = [match_number,direction,distance_number]
+                        movements_explored=[]
+                        movements_frontier=[]
+                        if len(self.explored)>0:
+                            movements_explored = list(map(lambda x:x[:2],self.explored))
+                        
+                        if len(self.frontier)>0:
+                            movements_frontier = list(map(lambda x:x[:2],self.frontier))
+
+                        if (value not in movements_frontier) and (value[:2] not in movements_explored):
+                            self.frontier.append(value)  ##### ['matched number/numero de los lados', 'Direccion',''f(n)']
+
                         # print(self.states)
                         # print(self.frontier)
                         break
+            self.cost +=1
+
+    def explorer_method(self):
+        shorter_distance = sorted(list(map(lambda x:x[2],self.frontier))) ##### distancia más corta
+        ordered_list = []
+        for value in shorter_distance:
+            ordered_list.append(list(filter(lambda x:value in x,self.frontier))[0])
+        # del self.frontier
+        self.frontier = ordered_list[1:]
+        selected_movement = ordered_list[0]
+        # selected_movement= list(filter(lambda x:shorter_distance in x,self.frontier))[0]
+        self.explored.append(selected_movement)
+        self.movements(selected_movement[1],selected_movement[0])
+        print(self.explored)
+        self.print_statement()
+        #['matched number/numero de los lados', 'Direccion',''f(n)']
+
+        # del self.frontier
+        # self.frontier = []
+        # print(frontier)
+        # print(self.frontier)
+        pass
 
 
+    def main(self):
+        objective = 1 
+        while self.no_reached_goal:
+            objective_position = self.find_position(value=objective)
+            self.frontier_method(objective=1)
+            self.explorer_method()
+            if objective_position ==[0,0]:
+                self.no_reached_goal=False
+
+
+
+    # def method(self,objective):       
+
+
+    #     distance_number = self.calculate_distances(coordinates_match_number,objective_position) + self.cost ### este 1 significa el numbero de movimientos
+    #     ###
+    #     if (len(distances)!=0): ### si no esta vacío
+    #         if distance_number<distances[-1][1]:  ### diferenciar el tipo de distancia del ultimo dato dado
+    #             distances.append([match_number,distance_number]) ## colocar en valores de nuevas distancias
+
+    #     else:
+    #         distances.append([match_numbers,distance_number])
+
+    # ##### realizar los movimientos
+    #     for direction in self.directions:
+    #         move_done  = self.movements(direction=direction)
+    #         if move_done:
+    #             self.explored.append(f'{distances[0][0]}{direction}') ## sabemos la dirección inicial
+    #             self.cost +=self.cost ### aumentamos el costo 
+    #             break
+
+            
+
+
+                
+
+
+    #     pass
 
        
 # changed_value=[]
-initial_state= [[7,2,4],[5,'*',6],[8,3,1]]
+# initial_state= [[7,2,4],[5,'*',6],[8,3,1]]
 # initial_state= [[7,2,4],[5,6,'*'],[8,3,1]]
-# initial_state= [[7,2,4],['*',5,6],[8,3,1]]
+initial_state= [[7,2,4],['*',5,6],[8,3,1]]
 
 
 
 example = A_star(initial_state=initial_state)
 example.print_statement()
-example.frontier_method(objective=1)
+# example.frontier_method(objective=1)
 # example.right(number=6)
 # example.left(number=6)
 # example.up(number=1)
@@ -248,4 +271,5 @@ example.frontier_method(objective=1)
 #         j = find[0].index('*')
 #         print([i,j])
 # print(initial_state.index['*'])
-print(example.frontier)
+# print(example.frontier)
+example.main()
