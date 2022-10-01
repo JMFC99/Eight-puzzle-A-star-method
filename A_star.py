@@ -187,8 +187,8 @@ class A_star:
         ordered_list = []
         for value in shorter_distance:
             ordered_list.append(list(filter(lambda x:value in x,self.frontier))[0])
-        # del self.frontier
-        self.frontier = ordered_list[1:]
+        del self.frontier
+        self.frontier = []
         selected_movement = ordered_list[0]
         # selected_movement= list(filter(lambda x:shorter_distance in x,self.frontier))[0]
         self.explored.append(selected_movement)
